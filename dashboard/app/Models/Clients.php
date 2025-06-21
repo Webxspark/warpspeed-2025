@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  *
@@ -37,4 +38,9 @@ class Clients extends Model
         'status',
         'company'
     ];
+
+    public function moms(): HasMany
+    {
+        return $this->hasMany(Moms::class);
+    }
 }

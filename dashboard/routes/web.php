@@ -15,6 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     Route::resource('clients', clientController::class);
     Route::resource('moms', momsController::class);
+
+    Route::post('moms/status', [momsController::class, 'updateStatus'])
+        ->name('moms.updateStatus');
 });
 
 require __DIR__.'/settings.php';

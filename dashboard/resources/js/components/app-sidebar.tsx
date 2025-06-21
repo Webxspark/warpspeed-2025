@@ -15,7 +15,7 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Clients',
+        title: 'Follow Ups',
         href: ROUTES.clients,
         icon: Users,
     },

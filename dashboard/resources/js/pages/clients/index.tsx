@@ -10,6 +10,7 @@ import { Edit, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import error from 'eslint-plugin-react/lib/util/error';
+import StatusBadge from '@/components/status-badge';
 const Clients = () => {
     const { clients, flash } = usePage<SharedData & { clients: IClient[] }>().props;
     useEffect(() => {
@@ -40,12 +41,12 @@ const Clients = () => {
         <AdminLayout
             breadcrumbs={[
                 { title: 'Dashboard', href: ROUTES.dashboard },
-                { title: 'Clients', href: ROUTES.clients },
+                { title: 'Follow Ups', href: ROUTES.clients },
             ]}
         >
-            <Head title={'Clients'} />
+            <Head title={'Follow Ups'} />
             <div className={'flex items-center justify-between'}>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Clients</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Follow Ups</h1>
                 <Button onClick={() => router.visit(`${ROUTES.clients}/create`)}>Add New</Button>
             </div>
             <Table>
@@ -72,20 +73,7 @@ const Clients = () => {
                                 </a>
                             </TableCell>
                             <TableCell>
-                                <Badge
-                                    className={'capitalize'}
-                                    variant={
-                                        value.status === 'new'
-                                            ? 'default'
-                                            : value.status === 'followed-up'
-                                              ? 'destructive'
-                                              : value.status === 'in-progress'
-                                                ? 'outline'
-                                                : 'secondary'
-                                    }
-                                >
-                                    {value.status.replace('-', ' ')}
-                                </Badge>
+                                <StatusBadge text={value.status} />
                             </TableCell>
                             <TableCell className={'flex items-center gap-2'}>
                                 <Button onClick={() => router.visit(`${ROUTES.clients}/${value.id}/edit`)} size={null} variant={'ghost'} className={'p-1 px-2'}>

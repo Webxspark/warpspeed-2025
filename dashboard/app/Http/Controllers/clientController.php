@@ -39,7 +39,7 @@ class clientController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'required|max:15',
             'company' => 'required',
-            'status' => 'in:new,followed-up,in-progress,completed'
+            'status' => 'required|in:new,followed-up,in-progress,completed'
         ]);
 
         $client = Clients::create([
