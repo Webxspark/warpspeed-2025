@@ -35,7 +35,7 @@ def start_conversation():
         "custom_greeting": request.json.get("greeting", "Hey there!"),
         "properties": {
             "max_call_duration": 3600,
-            "participant_left_timeout": 60,
+            "participant_left_timeout": 10,
             "participant_absent_timeout": 300,
             "enable_recording": True,
             "enable_closed_captions": True,
