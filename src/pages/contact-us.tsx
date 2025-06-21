@@ -1,3 +1,9 @@
+// import { BorderBeam } from "../components/magicui/border-beam.tsx";
+import { ShimmerButton } from "../components/magicui/shimmer-button.tsx";
+import {Link} from "react-router-dom";
+
+
+
 const ContactUs = () => {
     return (
         <div className="bg-gradient-to-b from-white to-blue-50 py-16">
@@ -38,6 +44,7 @@ const ContactUs = () => {
                             </div>
                         </div>
 
+
                         <div className="md:col-span-3 bg-white p-8 rounded-xl shadow-lg">
                             <h3 className="text-2xl font-bold mb-6 text-gray-800">Send us a message</h3>
                             <form>
@@ -59,11 +66,15 @@ const ContactUs = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="message">Message</label>
                                     <textarea id="message" rows={5} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
                                 </div>
-                                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-xl">
-                                    Send Message
-                                </button>
+                                <ShimmerButton className={"py-3 w-full"}>Contact Us</ShimmerButton>
                             </form>
+                            {/*<BorderBeam duration={8} size={100} />*/}
                         </div>
+                        {/*<div>*/}
+                        {/*    <div className="relative h-[500px] w-full overflow-hidden">*/}
+                        {/*        <BorderBeam />*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>

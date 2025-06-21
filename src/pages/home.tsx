@@ -1,4 +1,6 @@
-import { Button } from "../components/ui/button"
+import { InteractiveHoverButton } from "../components/magicui/interactive-hover-button.tsx";
+import { ShimmerButton } from "../components/magicui/shimmer-button.tsx";
+import {Link} from "react-router-dom";
 
 const Home = () => {
     return (
@@ -12,13 +14,9 @@ const Home = () => {
                         We replace outdated forms and lengthy onboarding calls with intelligent,
                         conversational AI that makes the process seamless for everyone.
                     </p>
-                    <div className="flex gap-4 justify-center">
-                        <a href="/about" className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl">
-                            Learn More
-                        </a>
-                        <a href="/contact" className="bg-white hover:bg-gray-100 text-blue-600 font-medium px-8 py-3 rounded-lg border border-blue-200 transition-all shadow hover:shadow-md">
-                            Contact Us
-                        </a>
+                    <div className="flex gap-4 justify-center items-center">
+                        <Link to={"/about"}><InteractiveHoverButton className={"py-3"}>Learn More</InteractiveHoverButton></Link>
+                        <Link to={"/contact"}><ShimmerButton className={"py-3"}>Contact Us</ShimmerButton></Link>
                     </div>
                 </div>
             </div>
