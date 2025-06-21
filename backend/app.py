@@ -19,8 +19,8 @@ logging.basicConfig(level=logging.INFO)
 @app.route("/start-conversation", methods=["POST"])
 def start_conversation():
     payload = {
-        "replica_id": os.getenv("TAVUS_REPLICA_ID", "r4317e64d25a"),
-        "persona_id": os.getenv("TAVUS_PERSONA_ID", "p1233c1ee2fb"),
+        "replica_id": os.getenv("TAVUS_REPLICA_ID"),
+        "persona_id": os.getenv("TAVUS_PERSONA_ID"),
         "callback_url": os.getenv(
             "TAVUS_CALLBACK_URL", "https://your-real-domain.com/webhook"
         ),
