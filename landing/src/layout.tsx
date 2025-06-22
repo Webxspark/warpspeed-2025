@@ -8,6 +8,7 @@ import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
 
+const cal_api = import.meta.env.VITE_CAL_API;
 // Define proper types for window augmentation
 declare global {
     interface Window {
@@ -86,17 +87,24 @@ const Layout = ({children}: { children: React.ReactNode }) => {
 
         const handleAppMessage = (event: { data: unknown }) => {
             const data = event.data as ITavusToolCall | undefined;
-            const args = typeof data?.properties.arguments === 'string' ? JSON.parse(data!.properties!.arguments) as Record<string, unknown> : data?.properties.arguments;
-            if (data?.event_type as string === 'conversation.tool_call' && data?.properties.name === 'open_form_dialog') {
-                setFormOpen(true);
-                console.log("Triggering form dialog");
-                console.log("Form arguments:", args);
+            const args = typeof data?.properties?.arguments === 'string' ? JSON.parse(data!.properties!.arguments) as Record<string, unknown> : data?.properties?.arguments;
+            if (data?.event_type as string === 'conversation.tool_call') {
+                if (data?.properties.name === 'open_form_dialog') {
+                    setFormOpen(true);
+                    console.log("Triggering form dialog");
+                    console.log("Form arguments:", args);
+                } else if (data?.properties.name === 'cal_book') {
+                    alert("Calendar booking on the way!");
+                    console.log(data)
+                } else if (data?.properties.name === 'end_meeting') {
+                    toggleVideoCall();
+                }
             }
         }
 
-        // callRef.current.on('app-message', (event) => {
-        //     console.log('app-message received:', event, event.data.event_type);
-        // });
+        callRef.current.on('app-message', (event) => {
+            console.log('app-message received:', event, event.data.event_type);
+        });
 
 
         // console.log(formRequest);
@@ -182,9 +190,9 @@ const Layout = ({children}: { children: React.ReactNode }) => {
     }, [localStream]);
 
     const toggleVideoCall = () => {
-        setLoading(true);
-        setMeetingInfo({} as IStartConversationResponse);
+        // Don't immediately set empty meeting info when closing
         if (!showVideoCall) {
+            setLoading(true);
             fetch(`${FLASK_API_URL}/start-conversation`, {
                 method: 'POST',
                 headers: {
@@ -202,30 +210,22 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                 })
                 .finally(() => {
                     setLoading(false);
-                })
-        }
-        setShowVideoCall(prev => !prev);
-    };
+                });
 
+            // Only change showVideoCall after setting meeting info
+            setShowVideoCall(true);
+        } else {
+            // When closing, first change the dialog state
+            setShowVideoCall(false);
+
+            // Then clear meeting info after a short delay
+            setTimeout(() => {
+                setMeetingInfo({} as IStartConversationResponse);
+            }, 100);
+        }
+    };
     const handlePopupFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // setFormOpen(false);
-        /*
-        * const sendAppMessage = () => {
-            if (!message || !callRef.current) return;
-
-            const interaction = {
-              message_type: 'conversation',
-              event_type: 'conversation.echo',
-              conversation_id: 'YOUR_CONVERSATION_ID',
-              properties: { text: message }
-            };
-
-
-            callRef.current.sendAppMessage(interaction, '*');
-            setMessage('');
-          };
-        * */
         const name = formNameRef.current?.value || '';
         const email = formEmailRef.current?.value || '';
         const phone = formPhoneRef.current?.value || '';
@@ -243,7 +243,7 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                 text: `Submitted Form Details: Name: ${name}, Email: ${email}, Phone: ${phone}`,
             }
         }
-        console.info('DEBUG: ',callRef.current.sendAppMessage(interaction, '*'));
+        console.info('DEBUG: ', callRef.current.sendAppMessage(interaction, '*'));
         setFormOpen(false);
     }
     return (
@@ -269,7 +269,7 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                 )}
             </button>
 
-            {/* Video Call using Shadcn Dialog */}
+            {/* Video Call using Dialog */}
             <Dialog open={showVideoCall}>
                 <DialogContent className="min-w-4xl w-full max-w-[90vw] p-0">
                     <DialogHeader className={'mx-4 mt-4 flex flex-row justify-between items-center'}>
@@ -363,15 +363,15 @@ const Layout = ({children}: { children: React.ReactNode }) => {
                     <form onSubmit={handlePopupFormSubmit} className={'flex flex-col gap-3'}>
                         <div className={'flex flex-col gap-1'}>
                             <Label htmlFor={'name'}>Name</Label>
-                            <Input id={'name'} placeholder={'Eg: Alan'} ref={formNameRef} />
+                            <Input id={'name'} placeholder={'Eg: Alan'} ref={formNameRef}/>
                         </div>
                         <div className={'flex flex-col gap-1'}>
                             <Label htmlFor={'email'}>Email</Label>
-                            <Input id={'email'} placeholder={'Eg: user@domain.tld'} ref={formEmailRef} />
+                            <Input id={'email'} placeholder={'Eg: user@domain.tld'} ref={formEmailRef}/>
                         </div>
                         <div className={'flex flex-col gap-1'}>
                             <Label htmlFor={'phone'}>Phone Number</Label>
-                            <Input id={'phone'} placeholder={'Eg: +9191760XXXXX'} ref={formPhoneRef} />
+                            <Input id={'phone'} placeholder={'Eg: +9191760XXXXX'} ref={formPhoneRef}/>
                         </div>
                         <div className="mt-4 flex justify-end">
                             <Button>Submit</Button>
