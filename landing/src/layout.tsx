@@ -7,7 +7,7 @@ import type {IStartConversationResponse} from "@/types/shared.ts";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-
+import {message} from "antd";
 const cal_api = import.meta.env.VITE_CAL_API;
 // Define proper types for window augmentation
 declare global {
@@ -217,11 +217,20 @@ const Layout = ({children}: { children: React.ReactNode }) => {
         } else {
             // When closing, first change the dialog state
             setShowVideoCall(false);
-
+            message.loading("Ending meeting...");
+            fetch(`${FLASK_API_URL}/conversation/${meetingInfo?.conversation_id}`)
+                .then(res => res.json())
+                .then(r => {
+                    console.log("Conversation ended:", r);
+                    message.success("Meeting ended successfully.");
+                }).catch(err => {
+                console.error("Error ending conversation:", err);
+                message.error("Error starting conversation:", err);
+            }).finally(() => setTimeout(() => message.destroy(), 3000));
             // Then clear meeting info after a short delay
             setTimeout(() => {
                 setMeetingInfo({} as IStartConversationResponse);
-            }, 100);
+            }, 300);
         }
     };
     const handlePopupFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {

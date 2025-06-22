@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ClientMailer;
+use App\Models\Clients;
 use App\Models\Moms;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 use function Pest\Laravel\json;
@@ -38,23 +41,41 @@ class momsController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'client_id' => 'required|integer|exists:clients,id',
-            'ai_summary' => 'required|string|max:255',
-            'requirements' => 'required|string|max:255',
-            'requirement_summary' => 'required|string|max:255',
-            'notes' => 'required|string|max:255',
-            'suggestions' => 'required|string|max:255',
-            'status' => 'required|in:new,followed-up,in-progress,completed'
+            'client_name' => 'required|string',
+            'client_email' => 'required|string',
+            'client_phone' => 'required|string',
+            'ai_summary' => 'required|string',
+            'requirements' => 'required|string',
+            'requirement_summary' => 'required|string',
+            'notes' => 'required|string',
+            'suggestions' => 'required|string',
         ]);
+        // Check if client already exists
+        // In your store method, modify the client creation part:
+        $client = Clients::firstOrCreate(
+            [
+                'email' => $request->client_email, // Query condition - check by email only
+            ],
+            [
+                'name' => $request->client_name,
+                'phone' => $request->client_phone,
+                'status' => 'new',
+                'company' => "Unknown"
+            ]
+        );
         $moms = Moms::create([
-            'client_id' => $request->client_id,
+            'client_id' => $client->id,
             'ai_summary' => $request->ai_summary,
             'requirements' => $request->requirements,
             'requirement_summary' => $request->requirement_summary,
             'notes' => $request->notes,
             'suggestions' => $request->suggestions,
-            'status' => $request->status
+            'status' => 'new'
         ]);
+        //send email to client
+        Mail::to($client->email)
+            ->send(new ClientMailer());
+
         return response()->json([
             'message' => "MOMs created successfully.",
             'moms' => $moms

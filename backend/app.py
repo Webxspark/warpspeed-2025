@@ -9,7 +9,7 @@ import json
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
 
 TAVUS_API_KEY = os.getenv("TAVUS_API_KEY")
 TAVUS_API_URL = "https://tavusapi.com/v2/conversations"
@@ -109,7 +109,6 @@ def get_conversation(conversation_id):
                     "content": f"Here is the conversation transcript:\n{transcript_str}\n\nPlease summarize the conversation and provide the required details in JSON format. Make sure to provide valid, parseable JSON without any explanation text."
                 }
             ],
-
         )
         
         # Get the response content
@@ -120,8 +119,32 @@ def get_conversation(conversation_id):
             # Parse the content as JSON
             parsed_json = json.loads(content_str)
             print("Parsed JSON:", parsed_json)
-            # Return the parsed JSON directly
-            return jsonify(parsed_json)
+            # # Return the parsed JSON directly
+            # return jsonify(parsed_json)
+            dUrl = os.environ.get("DASHBOARD_URL", "http://localhost:8000")
+            dUrl = dUrl + "/api/moms/new"
+            payload = {
+                "client_name": parsed_json.get("client_name", "N/A"),
+                "client_phone": parsed_json.get("client_phone", "N/A"),
+                "client_email": parsed_json.get("client_email", "N/A"),
+                "ai_summary": parsed_json.get("ai_summary", "N/A"),
+                "requirements": parsed_json.get("requirements", "N/A"),
+                "requirement_summary": parsed_json.get("requirement_summary", "N/A"),
+                "notes": parsed_json.get("notes", "N/A"),
+                "suggestions": parsed_json.get("suggestions", "N/A"),
+            }
+            headers = {
+                "Authorization": "Bearer " + os.getenv("DASHBOARD_API_KEY", ""),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+            response = requests.request("POST", dUrl, json=payload, headers=headers)
+            response.raise_for_status()  # Raise an error for bad responses
+            return jsonify({
+                "message": "Conversation details saved successfully",
+                "data": parsed_json
+            })
+
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {e}")
             # Return the raw content if parsing fails
