@@ -11,6 +11,7 @@ import { SharedData } from '@/types';
 import { IMom, TUtilStatus } from '@/types/shared';
 import { Head, router, usePage } from '@inertiajs/react';
 import dayjs from 'dayjs';
+import 'github-fork-ribbon-css/gh-fork-ribbon.css';
 import { Clock } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -93,7 +94,15 @@ const Index = () => {
             </div>
             <Dialog open={showPreview as boolean} onOpenChange={() => setShowPreview(false)}>
                 <DialogContent className={'lg:min-w-4xl'}>
-                    <DialogHeader>
+                    <style jsx>{`
+                        .github-fork-ribbon:before {
+                            background-color: #cb5534; /* Indigo color that matches your UI */
+                        }
+                    `}</style>
+                    <a className="github-fork-ribbon right-top fixed" href="#" data-ribbon="Powered by Sarvam" title="Powered by Sarvam">
+                        Powered by Sarvam
+                    </a>
+                    <DialogHeader className={'flex flex-col items-start justify-between gap-2'}>
                         <DialogTitle>Session Details with {(showPreview as IMom)?.client?.name}</DialogTitle>
                     </DialogHeader>
                     <div className={'max-h-96 overflow-y-scroll'}>
